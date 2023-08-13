@@ -22,9 +22,9 @@ defmodule AdcMcp3208 do
     # 1 = single_ended, 0 = differential
     single_ended = 1
 
-    # 0chの電圧値を取得
+    # 指定ch(0-7)の電圧値を取得
     {:ok, ref} = Circuits.SPI.open("spidev0.0")
-    {:ok, <<_::size(12), adc_counts::size(12)>>} = Circuits.SPI.transfer(ref, <<0::size(5), @start_bit::size(1), single_ended::size(1), channel::size(3), 0::size(6), 0x00>>)
+    {:ok, <<_::12, adc_counts::12>>} = Circuits.SPI.transfer(ref, <<0::5, @start_bit::1, single_ended::1, channel::3, 0::6, 0x00>>)
 
     voltage = adc_counts / 4095 * 3.3
 
@@ -33,7 +33,7 @@ defmodule AdcMcp3208 do
 
     Circuits.SPI.close(ref)
 
-    # 結果を返す
+    # 電圧値を返す
     voltage
   end
 end
