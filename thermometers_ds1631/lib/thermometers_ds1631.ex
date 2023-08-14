@@ -33,7 +33,7 @@ defmodule ThermometersDs1631 do
     Process.sleep(@conversion_time)
     I2C.write(ref, @ds1631_i2c_addr, <<@read_temperature_command>>)
 
-    {:ok, <<raw_temperature>>} = I2C.read(ref, @ds1631_i2c_addr, 2)
+    {:ok, <<raw_temperature::16>>} = I2C.read(ref, @ds1631_i2c_addr, 2)
 
     I2C.write(ref, @ds1631_i2c_addr, <<@stop_convert_command>>)
     I2C.close(ref)
