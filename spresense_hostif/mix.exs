@@ -47,6 +47,8 @@ defmodule SpresenseHostif.MixProject do
       {:ring_logger, "~> 0.10.0"},
       {:toolshed, "~> 0.3.0"},
 
+      {:circuits_spi, "~> 0.1"},
+
       # Allow Nerves.Runtime on host to support development, testing and CI.
       # See config/host.exs for usage.
       {:nerves_runtime, "~> 0.13.0"},
