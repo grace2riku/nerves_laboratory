@@ -47,10 +47,6 @@ defmodule SpresenseHostif do
 
     Logger.info("cmd_result = #{cmd_result}, Version = #{version_str}")
 
-#    Logger.info("version_str byte_size = #{byte_size(<<version_str>>)}")
-#    <<a::8, b::8, c::8, d::8, e::8, f::8, rest::bits>> = <<version_str>>
-#    Logger.info("a = #{a}, b = #{b}, c = #{c}, d = #{d}, e = #{e}, f = #{f}")
-
     {cmd_result, version_str}
   end
 
@@ -67,28 +63,10 @@ defmodule SpresenseHostif do
 
     {:ok, ref} = SPI.open("spidev0.0", mode: 1, speed_hz: 800000, delay_us: 100)
 
-#    {:ok, <<_::binary-size(2), cmd_result::binary-size(1), version_str::binary-size(data_len)>>} = SPI.transfer(ref, <<icmd_varlen_trans_cmd, data_len_low_byte, data_len_high_byte, 0xff::data_len*8>>)
-#    {:ok, <<_::16, cmd_result::8, version_str::data_len*8>>} = SPI.transfer(ref, <<icmd_varlen_trans_cmd, data_len_low_byte, data_len_high_byte, 0xff::data_len*8>>)
-
-#    {:ok, <<_::16, cmd_result::8, version_str::size(data_len)-unit(8)>>} = SPI.transfer(ref, <<icmd_varlen_trans_cmd, data_len_low_byte, data_len_high_byte, 0xff::size(data_len)-unit(8)>>)
-
-#    {:ok, <<_::1-unit(16), cmd_result::1-unit(8), version_str::size(data_len)-unit(8)>>} = SPI.transfer(ref, <<icmd_varlen_trans_cmd::1-unit(8), data_len_low_byte::1-unit(8), data_len_high_byte::1-unit(8), 0xff::size(data_len)-unit(8)>>)
-
-#    {:ok, <<_::1-unit(16), cmd_result::1-unit(8), a::1-unit(8), b::1-unit(8), c::1-unit(8), d::1-unit(8), e::1-unit(8), f::1-unit(8), version_str::bytes>>}
-#      = SPI.transfer(ref, <<icmd_varlen_trans_cmd::1-unit(8), data_len_low_byte::1-unit(8), data_len_high_byte::1-unit(8), 0xff::size(data_len)-unit(8)>>)
-
     {:ok, <<_::1-unit(16), cmd_result::1-unit(8), version_str::bytes>>}
       = SPI.transfer(ref, <<icmd_varlen_trans_cmd::1-unit(8), data_len_low_byte::1-unit(8), data_len_high_byte::1-unit(8), 0xff::size(data_len)-unit(8)>>)
 
-    # エラー
-#    {:ok, <<_::binary-size(2), cmd_result::binary-size(1), version_str::binary-size(data_len)>>} = SPI.transfer(ref, <<icmd_varlen_trans_cmd, data_len_low_byte, data_len_high_byte, 0xff::binary-size(data_len)>>)
-
     SPI.close(ref)
-
-#    Logger.info("version_str String.length = #{String.length(version_str)}")
-
-#    Logger.info("version_str byte_size = #{byte_size(<<version_str>>)}")
-#    Logger.info("a = #{a}, b = #{b}, c = #{c}, d = #{d}, e = #{e}, f = #{f}")
 
     case cmd_result do
       0 -> {:ok, version_str}
