@@ -53,14 +53,19 @@ defmodule SpresenseHostif do
     {cmd_result, version_str}
   end
 
-  use Bitwise
+  import Bitwise
   def host_receive(buffer_id, bufsize, lock) do
     data_len = bufsize - 3
-
     icmd_varlen_trans_cmd = @icmd_varlen_trans_id + buffer_id
+    lock_bit =
+      if lock do
+        0x40
+      else
+        0x00
+      end
 
     data_len_low_byte = data_len &&& 0xff
-    data_len_high_byte = ((data_len >>> 8) &&& 0x3f) ||| 0x40
+    data_len_high_byte = ((data_len >>> 8) &&& 0x3f) ||| lock_bit
 
     Logger.info("bufsize = #{bufsize}, data_len = #{data_len}, icmd_varlen_trans_cmd = #{icmd_varlen_trans_cmd}, data_len_low_byte = #{data_len_low_byte}, data_len_high_byte = #{data_len_high_byte}")
 
