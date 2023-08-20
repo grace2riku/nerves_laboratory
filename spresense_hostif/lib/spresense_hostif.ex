@@ -45,7 +45,10 @@ defmodule SpresenseHostif do
     total_len = bufsize + 3
     {cmd_result, version_str} = host_receive(2, total_len, true)
 
-    Logger.info("cmd_result = #{cmd_result}, Version = #{version_str}")
+    case cmd_result do
+      :ok -> {Logger.info("cmd_result = #{cmd_result}, Version = #{version_str}")}
+      _ -> {Logger.info("cmd_result = #{cmd_result}, #{version_str}")}
+    end
 
     {cmd_result, version_str}
   end
@@ -61,16 +64,16 @@ defmodule SpresenseHostif do
 
     Logger.info("bufsize = #{bufsize}, data_len = #{data_len}, icmd_varlen_trans_cmd = #{icmd_varlen_trans_cmd}, data_len_low_byte = #{data_len_low_byte}, data_len_high_byte = #{data_len_high_byte}")
 
-    {:ok, ref} = SPI.open("spidev0.0", mode: 1, speed_hz: 800000, delay_us: 100)
+    {:ok, ref} = SPI.open("spidev0.0", mode: 1, speed_hz: 800000)
 
-    {:ok, <<_::1-unit(16), cmd_result::1-unit(8), version_str::bytes>>}
+    {:ok, <<_::1-unit(16), cmd_result::1-unit(8), receive_binary_data::bytes>>}
       = SPI.transfer(ref, <<icmd_varlen_trans_cmd::1-unit(8), data_len_low_byte::1-unit(8), data_len_high_byte::1-unit(8), 0xff::size(data_len)-unit(8)>>)
 
     SPI.close(ref)
 
     case cmd_result do
-      0 -> {:ok, version_str}
-      _ -> {:error, "Unknown version."}
+      0 -> {:ok, receive_binary_data}
+      _ -> {:error, "Error receive data."}
     end
   end
 
